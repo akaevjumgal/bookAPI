@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>PostCard</title>
+  <meta content="width=device-width,initial-scale=1,minimal-ui" name="viewport">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+  <style media="screen">
+    * {
+      font-family: 'Roboto', sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .container {
+      width: 1280px;
+      margin: 0 auto;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    ul {
+      list-style-type: none;
+    }
+
+    .title {
+      margin: 5px 0;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .md-card {
+      -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+      padding: 20px 15px;
+      position: relative;
+      height: 150px;
+      margin: 20px 0;
+    }
+
+    .btn-edit,
+    .btn-delete {
+      border: none;
+      padding: 10px 12px;
+      background-color: #3f51b5;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+      margin: 10px 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="center">
+      <h2>List of Post's</h2>
+    </div>
+    <ul id="content"></ul>
+  </div>
+
+  <script>
+    'use strict'
+
+    var content = document.getElementById('content')
+
+    fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: "GET"
+    }).then(response => {
+      response.json().then(data => {
+        var posts = data;
+        for (let post of posts) {
+          let card = document.createElement('div')
+          card.className = 'md-card'
+          content.appendChild(card)
+
+          let card_head = document.createElement('div')
+          card.appendChild(card_head)
+
+          let card_body = document.createElement('div')
+          card.appendChild(card_body)
+
+          let hr = document.createElement('hr')
+          card.appendChild(hr)
+
+          let li = document.createElement('li')
+          let a = document.createElement('a')
+          a.className = 'title'
+          let text = document.createTextNode(post.title)
+          a.appendChild(text)
+          li.appendChild(a)
+          card_head.appendChild(li)
+
+          let p = document.createElement('p')
+          let card_text = document.createTextNode(post.body)
+          p.appendChild(card_text)
+          card_body.appendChild(p)
+
+          let btn_edit = document.createElement('input')
+          btn_edit.type = 'submit'
+          btn_edit.value = 'изменить'
+          btn_edit.className = 'btn-edit'
+          card.appendChild(btn_edit)
+
+          let btn_delete = document.createElement('input')
+          btn_delete.type = 'submit'
+          btn_delete.value = 'удалить'
+          btn_delete.className = 'btn-delete'
+          card.appendChild(btn_delete)
+        }
+      })
+    }).catch(error => {
+      console.log('Request failed', error);
+    })
+  </script>
+</body>
+
+</html>
