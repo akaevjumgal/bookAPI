@@ -34,13 +34,24 @@
       font-size: 18px;
     }
 
+    .card-body {
+      border-bottom: 1px solid #eee;
+    }
+
     .md-card {
       -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
       box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
       padding: 20px 15px;
       position: relative;
-      height: 150px;
+      min-height: 100px;
+      height: 100%;
       margin: 20px 0;
+      border-radius: 5px;
+    }
+
+    .author {
+      color: #777;
+      font-size: 14px;
     }
 
     .btn-edit,
@@ -52,6 +63,7 @@
       cursor: pointer;
       box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
       margin: 10px 5px;
+      border-radius: 3px;
     }
   </style>
 </head>
@@ -69,11 +81,11 @@
 
     var content = document.getElementById('content')
 
-    fetch('https://jsonplaceholder.typicode.com/posts', {
+    fetch('http://0.0.0.0:3000/db', {
       method: "GET"
     }).then(response => {
       response.json().then(data => {
-        var posts = data;
+        var posts = data.data;
         for (let post of posts) {
           let card = document.createElement('div')
           card.className = 'md-card'
@@ -82,11 +94,15 @@
           let card_head = document.createElement('div')
           card.appendChild(card_head)
 
-          let card_body = document.createElement('div')
-          card.appendChild(card_body)
+          let author = document.createElement('span')
+          author.className = 'author'
+          let txt = document.createTextNode("Автор: " + post.author)
+          author.appendChild(txt)
+          card.appendChild(author)
 
-          let hr = document.createElement('hr')
-          card.appendChild(hr)
+          let card_body = document.createElement('div')
+          card_body.className = 'card-body'
+          card.appendChild(card_body)
 
           let li = document.createElement('li')
           let a = document.createElement('a')
