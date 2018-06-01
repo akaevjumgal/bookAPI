@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title><%=post_id %></title>
+    <meta content="width=device-width,initial-scale=1,minimal-ui" name="viewport" charset="utf-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+    <link rel="stylesheet" href="/main.css">
+    <link rel="stylesheet" href="/post.css">
+  </head>
+  <body>
+    <div class="container">
+      <ul id="main"></ul>
+      <div class="modal" id="modal-update">
+        <div class="modal-content" id="modal-edit"></div>
+      </div>
+    </div>
+
+      <script type="text/javascript">
+
+          var main = document.getElementById('main')
+          var modal_edit = document.getElementById('modal-edit')
+
+          fetch('http://0.0.0.0:3000/data/' + <%=post_id %>, {
+            method: "GET"
+          }).then(response => {
+            response.json().then(post => {
+
+                let li = document.createElement('li')
+                let a = document.createElement('h2')
+                let text = document.createTextNode(post.title)
+                a.appendChild(text)
+                li.appendChild(a)
+                main.appendChild(li)
+
+                let author = document.createElement('span')
+                author.className = 'author'
+                let txt = document.createTextNode("Автор: " + post.author)
+                author.appendChild(txt)
+                main.appendChild(author)
+
+                let p = document.createElement('p')
+                p.className = 'text-body'
+                let text_body = document.createTextNode(post.body)
+                p.appendChild(text_body)
+                main.appendChild(p)
+
+                let btn_edit = document.createElement('input')
+                btn_edit.type = 'submit'
+                btn_edit.value = 'изменить'
+                btn_edit.className = 'btn'
+                btn_edit.id = 'btn-edit'
+                main.appendChild(btn_edit)
+
+                let btn_delete = document.createElement('input')
+                btn_delete.type = 'submit'
+                btn_delete.value = 'удалить'
+                btn_delete.className = 'btn'
+                btn_delete.id = 'btn-delete'
+                main.appendChild(btn_delete)
+
+                let modal_title = document.createElement('h3')
+                modal_title.innerHTML = "Редактирование"
+                modal_title.className = "center"
+                modal_edit.appendChild(modal_title)
+
+                let div_title = document.createElement('div')
+                let label_title = document.createElement('label')
+                label_title.for = "title"
+                label_title.innerHTML = "Заголовок: "
+                let input_title = document.createElement('input')
+                input_title.type = 'text'
+                input_title.name = 'title'
+                input_title.id = 'title'
+                input_title.placeholder = 'название'
+                input_title.value = post.title
+                div_title.appendChild(label_title)
+                div_title.appendChild(input_title)
+                modal_edit.appendChild(div_title)
+
+                let div_author = document.createElement('div')
+                let label_author = document.createElement('label')
+                label_author.for = "author"
+                label_author.innerHTML = "Автор: "
+                let input_author = document.createElement('input')
+                input_author.type = 'text'
+                input_author.name = 'author'
+                input_author.id = 'author'
+                input_author.placeholder = 'имя и фамилия'
+                input_author.value = post.author
+                div_author.appendChild(label_author)
+                div_author.appendChild(input_author)
+                modal_edit.appendChild(div_author)
+
+                let div_textarea = document.createElement('div')
+                let label_textarea = document.createElement('label')
+                label_textarea.for = "description"
+                label_textarea.innerHTML = "Описание: "
+                div_textarea.appendChild(label_textarea)
+                modal_edit.appendChild(div_textarea)
+                let input_textarea = document.createElement('textarea')
+                input_textarea.name = "description"
+                input_textarea.rows = "8"
+                input_textarea.cols = "80"
+                input_textarea.id = "description"
+                input_textarea.innerHTML = post.body
+                modal_edit.appendChild(input_textarea)
+                let modal_footer = document.createElement('div')
+                modal_footer.className = "modal-footer"
+                let modal_close = document.createElement('a')
+                modal_close.innerHTML = "Обновить"
+                modal_close.className = "btn modal-close"
+                modal_close.id = "btn-update"
+                modal_close.setAttribute('onclick', 'updatePost(' + post.id + ',' + post.authorID + ')')
+                modal_footer.appendChild(modal_close)
+                modal_edit.appendChild(modal_footer)
+            })
+          }).catch(error => {
+            console.log('Request failed', error)
+          })
+
+          window.onload = function() {
+            /*Modal window activate*/
+            let btn = document.getElementById('btn-edit')
+            let modal = document.getElementById('modal-update')
+            // let span = document.getElementById('btn-update')
+
+            btn.onclick = function() {
+              modal.style.display = 'block'
+            }
+            // span.onclick = function () {
+            //   modal.style.display = 'none'
+            // }
+
+            window.onclick = function(event){
+              if(event.target == modal){
+                modal.style.display = 'none'
+              }
+            }
+          }
+
+
+          function updatePost(post_id, author_id){
+            let title = document.querySelector("#title").value
+            let author = document.querySelector("#author").value
+            let textarea = document.querySelector("#description").value
+
+            console.log(post_id)
+
+                fetch('http://0.0.0.0:3000/data/' + <%= post_id %>, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                      authorID: author_id,
+                      id: post_id,
+                      title: title,
+                      author: author,
+                      body: textarea
+                    }),
+                    headers: {
+                      "Content-type": "application/json; charset=UTF-8"
+                    }
+                  }).then(response => response.json())
+                  
+
+          }
+
+
+      </script>
+  </body>
+</html>

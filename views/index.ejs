@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+
+<head>
+  <title>PostCard</title>
+  <meta content="width=device-width,initial-scale=1,minimal-ui" name="viewport" charset="utf-8">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+  <link rel="stylesheet" href="/main.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="center">
+      <h2>Список Литературы</h2>
+      <div id="find-box">
+        <input type="search" name="search_input" onkeyup="searchByAuthor()" placeholder="например: Михаил Булгаков" id="main_search">
+      </div>
+    </div>
+    <ul id="content"></ul>
+  </div>
+
+  <script>
+
+    var content = document.getElementById('content')
+
+    fetch('http://0.0.0.0:3000/data', {
+      method: "GET"
+    }).then(response => {
+      response.json().then(data => {
+        var posts = data;
+        for (let post of posts) {
+          let card = document.createElement('div')
+          card.className = 'md-card'
+          content.appendChild(card)
+
+          let card_head = document.createElement('div')
+          card_head.className = 'card-head'
+          card.appendChild(card_head)
+
+          let author = document.createElement('span')
+          author.className = 'author'
+          let txt = document.createTextNode("Автор: " + post.author)
+          author.appendChild(txt)
+          card.appendChild(author)
+
+          let card_body = document.createElement('div')
+          card_body.className = 'card-body'
+          card.appendChild(card_body)
+
+          let li = document.createElement('li')
+          let a = document.createElement('a')
+          a.className = 'title'
+          let text = document.createTextNode(post.title)
+          a.appendChild(text)
+          li.appendChild(a)
+          card_head.appendChild(li)
+
+          let btn_more = document.createElement('a')
+          btn_more.className = "btn"
+          btn_more.href = "/post/" + post.id
+          tmp = post.author.split(" ")
+          let link_text = document.createTextNode('подробнее')
+          btn_more.appendChild(link_text)
+          card.appendChild(btn_more)
+
+        }
+      })
+    }).catch(error => {
+      console.log('Request failed', error);
+    })
+
+    function searchByAuthor() {
+
+      content.innerHTML = ''
+
+      var container = document.querySelector("#main_search").value
+
+      var arr = container.split(" ")
+      fetch('http://0.0.0.0:3000/data?author=' + arr.join('+'), {
+        methor: "GET"
+      }).then(response => {
+          response.json().then(data => {
+            var posts = data
+            for (let post of posts) {
+
+              let card = document.createElement('div')
+              card.className = 'md-card'
+              content.appendChild(card)
+
+              let card_head = document.createElement('div')
+              card_head.className = 'card-head'
+              card.appendChild(card_head)
+
+              let author = document.createElement('span')
+              author.className = 'author'
+              let txt = document.createTextNode("Автор: " + post.author)
+              author.appendChild(txt)
+              card.appendChild(author)
+
+              let card_body = document.createElement('div')
+              card_body.className = 'card-body'
+              card.appendChild(card_body)
+
+              let li = document.createElement('li')
+              let a = document.createElement('a')
+              a.className = 'title'
+              let text = document.createTextNode(post.title)
+              a.appendChild(text)
+              li.appendChild(a)
+              card_head.appendChild(li)
+
+              let btn_more = document.createElement('a')
+              btn_more.className = "btn"
+              btn_more.href = "/post/" + post.id
+              tmp = post.author.split(" ")
+              let link_text = document.createTextNode('подробнее')
+              btn_more.appendChild(link_text)
+              card.appendChild(btn_more)
+
+            }
+          })
+        }).catch(error => {
+          console.log('Request failed', error);
+        })
+    }
+  
+  </script>
+</body>
+
+</html>
