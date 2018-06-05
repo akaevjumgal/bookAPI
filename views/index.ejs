@@ -38,7 +38,7 @@
     с последующей генерацией контента
     ***********************************************************/
 
-    fetch('https://book-list-api.herokuapp.com/data', {
+    fetch('http://0.0.0.0:3000/data', {
       method: "GET"
     }).then(response => {
       response.json().then(data => {
@@ -124,7 +124,7 @@
 
       let arr = container.split(" ")
 
-      fetch('https://book-list-api.herokuapp.com/data?author=' + arr.join('+'), {
+      fetch('http://0.0.0.0:3000/data?author=' + arr.join('+'), {
         methor: "GET"
       }).then(response => {
         var loader = document.getElementById('loader-container')
@@ -191,7 +191,7 @@
 
       let arr = container.split(" ")
 
-      fetch('https://book-list-api.herokuapp.com/data?title=' + arr.join('+'), {
+      fetch('http://0.0.0.0:3000/data?title=' + arr.join('+'), {
         methor: "GET"
       }).then(response => {
         var loader = document.getElementById('loader-container')
