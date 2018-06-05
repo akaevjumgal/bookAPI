@@ -5,6 +5,7 @@
   <title>PostCard</title>
   <meta content="width=device-width,initial-scale=1,minimal-ui" name="viewport" charset="utf-8">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png">
   <link rel="stylesheet" href="/main.css">
 </head>
 
@@ -12,16 +13,30 @@
   <div class="container">
     <div class="center">
       <h2>Список Литературы</h2>
-      <div id="find-box">
-        <input type="search" name="search_input" onkeyup="searchByAuthor()" placeholder="например: Михаил Булгаков" id="main_search">
+      <div id="find-box"><!--Главное поле поиска-->
+        <input type="search" name="search_input" onkeyup="searchByKey()" placeholder="например: Михаил Булгаков" id="search">
+      </div>
+      <div id="searchType">
+        <label for="author">по автору</label>
+        <input type="radio" name="searchType" id="author" value="author" checked><!--Переключить критерий выборки по автору-->
+        <label for="author">по названию</label>
+        <input type="radio" name="searchType" id="title" value="title"><!--Переключить критерий выборки по названию-->
       </div>
     </div>
-    <ul id="content"></ul>
+    <ul id="content"><!--Отображение всего контента-->
+    </ul>
+    <div id="loader-container"><!--Контейнер для отображения состояния запроса-->
+    </div>
   </div>
 
   <script>
 
     var content = document.getElementById('content')
+
+    /**********************************************************
+    Запрос и получение данных из локального сервера,
+    с последующей генерацией контента
+    ***********************************************************/
 
     fetch('http://0.0.0.0:3000/data', {
       method: "GET"
@@ -57,7 +72,7 @@
 
           let btn_more = document.createElement('a')
           btn_more.className = "btn"
-          btn_more.href = "/post/" + post.id
+          btn_more.href = "/post/" + post.id + "/" + post.title
           tmp = post.author.split(" ")
           let link_text = document.createTextNode('подробнее')
           btn_more.appendChild(link_text)
@@ -66,64 +81,171 @@
         }
       })
     }).catch(error => {
-      console.log('Request failed', error);
+      console.log('Request failed', error)
     })
 
-    function searchByAuthor() {
+    let input = document.getElementById('search')
+    let author = document.getElementById('author')
+    let title = document.getElementById('title')
+
+    author.onclick = function(){
+      input.placeholder = 'например: Михаил Булгаков'
+    }
+    title.onclick = function(){
+      input.placeholder = 'например: Мастер и Маргарита'
+    }
+
+    /**********************************************************
+    Функция для выбора критерия отбора.
+    Данная Функция проверяет какая из переключателей активна,
+    в соотвествии с этим вызывает нужную функцию
+    ***********************************************************/
+
+    function searchByKey() {
+
+      if(document.getElementById('author').checked){
+        input.placeholder = 'например: Михаил Булгаков'
+        searchByAuthor()
+      }else if(document.getElementById('title').checked){
+        input.placeholder = 'например: Мастер и Маргарита'
+        searchByTitle()
+      }
+
+    }
+
+    /**********************************************************
+    Функция для выборки записей по ключу - author
+    ***********************************************************/
+    function searchByAuthor(){
 
       content.innerHTML = ''
 
-      var container = document.querySelector("#main_search").value
+      let container = document.querySelector("#search").value
 
-      var arr = container.split(" ")
+      let arr = container.split(" ")
+
       fetch('http://0.0.0.0:3000/data?author=' + arr.join('+'), {
         methor: "GET"
       }).then(response => {
-          response.json().then(data => {
-            var posts = data
-            for (let post of posts) {
-
-              let card = document.createElement('div')
-              card.className = 'md-card'
-              content.appendChild(card)
-
-              let card_head = document.createElement('div')
-              card_head.className = 'card-head'
-              card.appendChild(card_head)
-
-              let author = document.createElement('span')
-              author.className = 'author'
-              let txt = document.createTextNode("Автор: " + post.author)
-              author.appendChild(txt)
-              card.appendChild(author)
-
-              let card_body = document.createElement('div')
-              card_body.className = 'card-body'
-              card.appendChild(card_body)
-
-              let li = document.createElement('li')
-              let a = document.createElement('a')
-              a.className = 'title'
-              let text = document.createTextNode(post.title)
-              a.appendChild(text)
-              li.appendChild(a)
-              card_head.appendChild(li)
-
-              let btn_more = document.createElement('a')
-              btn_more.className = "btn"
-              btn_more.href = "/post/" + post.id
-              tmp = post.author.split(" ")
-              let link_text = document.createTextNode('подробнее')
-              btn_more.appendChild(link_text)
-              card.appendChild(btn_more)
-
+        var loader = document.getElementById('loader-container')
+            if(content.firstChild == null){
+              loader.innerHTML = '<b>Не найдено...</b>'
             }
-          })
-        }).catch(error => {
+            response.json().then(data => {
+              if(data != ''){
+                loader.innerHTML = ''
+              }
+              var posts = data
+              for (let post of posts) {
+
+                let card = document.createElement('div')
+                card.className = 'md-card'
+                content.appendChild(card)
+
+                let card_head = document.createElement('div')
+                card_head.className = 'card-head'
+                card.appendChild(card_head)
+
+                let author = document.createElement('span')
+                author.className = 'author'
+                let txt = document.createTextNode("Автор: " + post.author)
+                author.appendChild(txt)
+                card.appendChild(author)
+
+                let card_body = document.createElement('div')
+                card_body.className = 'card-body'
+                card.appendChild(card_body)
+
+                let li = document.createElement('li')
+                let a = document.createElement('a')
+                a.className = 'title'
+                let text = document.createTextNode(post.title)
+                a.appendChild(text)
+                li.appendChild(a)
+                card_head.appendChild(li)
+
+                let btn_more = document.createElement('a')
+                btn_more.className = "btn"
+                btn_more.href = "/post/" + post.id
+                tmp = post.author.split(" ")
+                let link_text = document.createTextNode('подробнее')
+                btn_more.appendChild(link_text)
+                card.appendChild(btn_more)
+
+              }
+            })
+        }).catch(error => {//Обработчик - если поймана ошибка, выводит в консоль сообщение
           console.log('Request failed', error);
         })
     }
-  
+
+    /**********************************************************
+    Функция для выборки записей по ключу - title
+    ***********************************************************/
+
+    function searchByTitle(){
+
+      content.innerHTML = ''
+
+      let container = document.querySelector("#search").value
+
+      let arr = container.split(" ")
+
+      fetch('http://0.0.0.0:3000/data?title=' + arr.join('+'), {
+        methor: "GET"
+      }).then(response => {
+        var loader = document.getElementById('loader-container')
+            if(content.firstChild == null){
+              loader.innerHTML = '<b>Не найдено...</b>'
+            }
+            response.json().then(data => {
+              if(data != ''){
+                loader.innerHTML = ''
+              }
+          var posts = data
+          for (let post of posts) {
+
+            let card = document.createElement('div')
+            card.className = 'md-card'
+            content.appendChild(card)
+
+            let card_head = document.createElement('div')
+            card_head.className = 'card-head'
+            card.appendChild(card_head)
+
+            let author = document.createElement('span')
+            author.className = 'author'
+            let txt = document.createTextNode("Автор: " + post.author)
+            author.appendChild(txt)
+            card.appendChild(author)
+
+            let card_body = document.createElement('div')
+            card_body.className = 'card-body'
+            card.appendChild(card_body)
+
+            let li = document.createElement('li')
+            let a = document.createElement('a')
+            a.className = 'title'
+            let text = document.createTextNode(post.title)
+            a.appendChild(text)
+            li.appendChild(a)
+            card_head.appendChild(li)
+
+            let btn_more = document.createElement('a')
+            btn_more.className = "btn"
+            btn_more.href = "/post/" + post.id
+            tmp = post.author.split(" ")
+            let link_text = document.createTextNode('подробнее')
+            btn_more.appendChild(link_text)
+            card.appendChild(btn_more)
+
+          }
+        })
+      }).catch(error => {//Обработчик - если поймана ошибка, выводит в консоль сообщение
+        console.log('Request failed', error);
+      })
+    }
+
   </script>
 </body>
 

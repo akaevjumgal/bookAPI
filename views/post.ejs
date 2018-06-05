@@ -2,9 +2,11 @@
 <html lang="ru" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title><%=post_id %></title>
+    <title><%=title %></title>
     <meta content="width=device-width,initial-scale=1,minimal-ui" name="viewport" charset="utf-8">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.png">
     <link rel="stylesheet" href="/main.css">
     <link rel="stylesheet" href="/post.css">
   </head>
@@ -14,12 +16,16 @@
       <div class="modal" id="modal-update">
         <div class="modal-content" id="modal-edit"></div>
       </div>
+      <div class="modal" id="modal-delete">
+        <div class="modal-content" id="modal-remove"></div>
+      </div>
     </div>
 
       <script type="text/javascript">
 
           var main = document.getElementById('main')
           var modal_edit = document.getElementById('modal-edit')
+          var modal_remove = document.getElementById('modal-remove')
 
           fetch('http://0.0.0.0:3000/data/' + <%=post_id %>, {
             method: "GET"
@@ -59,6 +65,7 @@
                 btn_delete.id = 'btn-delete'
                 main.appendChild(btn_delete)
 
+                /*Modal edit - begin*/
                 let modal_title = document.createElement('h3')
                 modal_title.innerHTML = "Редактирование"
                 modal_title.className = "center"
@@ -114,6 +121,41 @@
                 modal_close.setAttribute('onclick', 'updatePost(' + post.id + ',' + post.authorID + ')')
                 modal_footer.appendChild(modal_close)
                 modal_edit.appendChild(modal_footer)
+                /*Modal edit - end here*/
+
+                /*Modal remove - begin*/
+                let delete_title = document.createElement('h3')
+                delete_title.innerHTML = "Удаление"
+                delete_title.className = "center"
+                modal_remove.appendChild(delete_title)
+
+                let confirm_msg = document.createElement('h4')
+                confirm_msg.className = 'center'
+                confirm_msg.innerHTML = 'Вы действительно хотите удалить эту запись?'
+                modal_remove.appendChild(confirm_msg)
+
+                let div_center = document.createElement('div')
+                div_center.className = 'center'
+                div_center.id = 'div-center'
+                modal_remove.appendChild(div_center)
+
+                let yes_btn = document.createElement('a')
+                yes_btn.innerHTML = 'Да'
+                yes_btn.className = 'btn'
+                yes_btn.id = 'btn-yes'
+                yes_btn.style.backgroundColor = '#f44336'
+                yes_btn.setAttribute('onclick', "deletePost()")
+                div_center.appendChild(yes_btn)
+                let no_btn = document.createElement('a')
+                no_btn.innerHTML = 'Нет'
+                no_btn.className = 'btn'
+                no_btn.id = 'btn-no'
+                no_btn.style.backgroundColor = '#4caf50'
+                div_center.appendChild(no_btn)
+
+                no_btn.onclick = function(){
+                  document.getElementById('modal-delete').style.display = 'none'
+                }
             })
           }).catch(error => {
             console.log('Request failed', error)
@@ -121,20 +163,23 @@
 
           window.onload = function() {
             /*Modal window activate*/
-            let btn = document.getElementById('btn-edit')
-            let modal = document.getElementById('modal-update')
-            // let span = document.getElementById('btn-update')
+            let btn_edit = document.getElementById('btn-edit')
+            let modal_update = document.getElementById('modal-update')
+            let btn_delete = document.getElementById('btn-delete')
+            let modal_delete = document.getElementById('modal-delete')
 
-            btn.onclick = function() {
-              modal.style.display = 'block'
+            btn_edit.onclick = function() {
+              modal_update.style.display = 'block'
             }
-            // span.onclick = function () {
-            //   modal.style.display = 'none'
-            // }
-
+            btn_delete.onclick = function() {
+              modal_delete.style.display = 'block'
+            }
             window.onclick = function(event){
-              if(event.target == modal){
-                modal.style.display = 'none'
+              if(event.target == modal_update){
+                modal_update.style.display = 'none'
+              }
+              if(event.target == modal_delete){
+                modal_delete.style.display = 'none'
               }
             }
           }
@@ -144,8 +189,6 @@
             let title = document.querySelector("#title").value
             let author = document.querySelector("#author").value
             let textarea = document.querySelector("#description").value
-
-            console.log(post_id)
 
                 fetch('http://0.0.0.0:3000/data/' + <%= post_id %>, {
                     method: 'PUT',
@@ -159,10 +202,45 @@
                     headers: {
                       "Content-type": "application/json; charset=UTF-8"
                     }
-                  }).then(response => response.json())
-                  
-
+                  }).then(response => {
+                    var update_btn = document.getElementById('btn-update')
+                    if(response.status == 200){
+                      response.json()
+                      update_btn.innerHTML = 'Обновлено <i class="fas fa-check"></i>'
+                      update_btn.style.backgroundColor = '#4caf50'
+                      update_btn.style.transition = '.4s'
+                      // alert("Запись обновлена")
+                    }else{
+                      update_btn.innerHTML = 'Ошибка <i class="far fa-times-circle"></i>'
+                      update_btn.style.backgroundColor = '#f44336'
+                      update_btn.style.transition = '.4s'
+                      alert("Ошибка в запросе!")
+                    }
+                    setTimeout(refreshBrowser, 1500);
+                  }).catch(error => {
+                    console.log('Request failed', error)
+                  })
           }
+
+          function deletePost(){
+            fetch('http://0.0.0.0:3000/data/' + <%= post_id %>, {
+              method: 'DELETE'
+            }).catch(error => {
+              console.log(error)
+            })
+            let btn_yes = document.getElementById('btn-yes')
+            let btn_no = document.getElementById('btn-no').remove()
+            btn_yes.innerHTML = 'Запись удалена'
+            btn_yes.style.padding = '10px 30px'
+            btn_yes.style.transition = '.4s'
+
+            setTimeout(function(){location.href = '/'}, 1500);
+          }
+
+          function refreshBrowser() {
+            location.href = location.href
+          }
+
 
 
       </script>

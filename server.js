@@ -14,6 +14,6 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => console.log("Server is serving in port " + port))
 
-app.get('/post/:id', (req, res) => {
-  res.render('post', { post_id: req.params.id })
+app.get('/post/:id/:title', (req, res) => {
+  res.render('post', { post_id: req.params.id, title: req.params.title })
 })

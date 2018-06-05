@@ -8,6 +8,9 @@ input,
 button{
   outline: none;
 }
+body{
+  position: relative;
+}
 .container {
   width: 1280px;
   margin: 0 auto;
@@ -64,12 +67,23 @@ ul {
   width: 300px;
   height: 40px;
   margin: 0 auto;
+  border: 1.5px solid #eee;
 }
-#main_search {
+#search {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: inherit;
   width: 100%;
   padding: 0 10px;
-  border: 1.5px solid #eee;
+  border: none;
+}
+#searchType{
+  margin: 10px 0;
+}
+#loader-container{
+  text-align: center;
+  width: 100%;
 }
 .truncate {
   width: 100%;

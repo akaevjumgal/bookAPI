@@ -52,3 +52,6 @@ input[name="author"]{
   bottom: 0;
   margin: 20px;
 }
+#modal-remove{
+  padding: 25px 10px;
+}
