@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "concurrently --kill-others \"json-server db.json\" \"nodemon server.js\""
   },
+  "engines": {
+    "node": "9.4.0"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
