@@ -27,7 +27,7 @@
           var modal_edit = document.getElementById('modal-edit')
           var modal_remove = document.getElementById('modal-remove')
 
-          fetch('http://0.0.0.0:3000/data/' + <%=post_id %>, {
+          fetch('https://book-list-api.herokuapp.com/data/' + <%=post_id %>, {
             method: "GET"
           }).then(response => {
             response.json().then(post => {
@@ -223,7 +223,7 @@
           }
 
           function deletePost(){
-            fetch('http://0.0.0.0:3000/data/' + <%= post_id %>, {
+            fetch('https://book-list-api.herokuapp.com/data/' + <%= post_id %>, {
               method: 'DELETE'
             }).catch(error => {
               console.log(error)
