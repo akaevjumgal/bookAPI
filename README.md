@@ -5,5 +5,5 @@
 > ### npm install 
 ### Затем запустить json-server:
 > ### json-server db.json
-### После запустить сервер:
+### Дублировать терминал, и запустить сервер:
 > ### nodemon server.js
