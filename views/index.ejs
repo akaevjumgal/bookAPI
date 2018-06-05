@@ -166,7 +166,7 @@
 
                 let btn_more = document.createElement('a')
                 btn_more.className = "btn"
-                btn_more.href = "/post/" + post.id
+                btn_more.href = "/post/" + post.id + "/" + post.title
                 tmp = post.author.split(" ")
                 let link_text = document.createTextNode('подробнее')
                 btn_more.appendChild(link_text)
@@ -233,7 +233,7 @@
 
             let btn_more = document.createElement('a')
             btn_more.className = "btn"
-            btn_more.href = "/post/" + post.id
+            btn_more.href = "/post/" + post.id + "/" + post.title
             tmp = post.author.split(" ")
             let link_text = document.createTextNode('подробнее')
             btn_more.appendChild(link_text)

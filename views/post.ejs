@@ -112,6 +112,7 @@
                 input_textarea.id = "description"
                 input_textarea.innerHTML = post.body
                 modal_edit.appendChild(input_textarea)
+
                 let modal_footer = document.createElement('div')
                 modal_footer.className = "modal-footer"
                 let modal_close = document.createElement('a')
@@ -121,6 +122,7 @@
                 modal_close.setAttribute('onclick', 'updatePost(' + post.id + ',' + post.authorID + ')')
                 modal_footer.appendChild(modal_close)
                 modal_edit.appendChild(modal_footer)
+
                 /*Modal edit - end here*/
 
                 /*Modal remove - begin*/
@@ -216,14 +218,14 @@
                       update_btn.style.transition = '.4s'
                       alert("Ошибка в запросе!")
                     }
-                    setTimeout(refreshBrowser, 1500);
+                    setTimeout(refreshBrowser, 1500);//Перезагрузка страницы после обновления полей
                   }).catch(error => {
                     console.log('Request failed', error)
                   })
           }
 
           function deletePost(){
-            fetch('https://book-list-api.herokuapp.com/data/' + <%= post_id %>, {
+            fetch('http://0.0.0.0:3000/data/' + <%= post_id %>, {
               method: 'DELETE'
             }).catch(error => {
               console.log(error)
